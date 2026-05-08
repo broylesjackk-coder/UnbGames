@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (loadingEnabled) {
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
-            }, 1200);
+            }, 400);
         } else {
             loadingScreen.style.display = 'none';
         }

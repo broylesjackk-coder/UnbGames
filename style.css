@@ -35,7 +35,8 @@ body {
     filter: brightness(0.5) saturate(1.1);
     z-index: -1;
     transform: scale(1.1);
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
 }
 
 /* Loading Screen */
@@ -51,7 +52,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 #loading-screen.hidden {
@@ -109,7 +110,8 @@ body {
     justify-content: center;
     align-items: center;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-    transition: bottom 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: bottom 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: bottom;
 }
 
 .floating-nav.visible {
