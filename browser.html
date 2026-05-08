@@ -10,10 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Proxy Engine & Transports -->
-    <script src="/engine/scramjet.all.js"></script>
-    <script src="/engine/controller.api.js"></script>
-    <script src="/engine/epoxy.js"></script>
-    <script src="/engine/libcurl.js"></script>
+    <script src="/engine/scramjet.all.js?v=2"></script>
+    <script src="/engine/controller.api.js?v=2"></script>
+    <script src="/engine/epoxy.js?v=2"></script>
+    <script src="/engine/libcurl.js?v=2"></script>
     
     <style>
         .browser-window.minimized { height: 60px; overflow: hidden; }
@@ -29,7 +29,7 @@
 <body>
     <div id="loading-screen">
         <div class="loader"></div>
-        <div class="loader-text" id="loadingText">Connecting to Scramjet Network</div>
+        <div class="loader-text" id="loadingText">Establishing Secure Connection</div>
         <div id="errorLog"></div>
         <button id="retryBtn" style="display:none; margin-top: 1rem; padding: 10px 20px; background: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; font-weight: 700;">Reload Engine</button>
         <script>
@@ -72,7 +72,7 @@
                 <div class="url-bar">
                     <div class="proxy-indicator">
                         <span class="status-dot" id="proxyStatus"></span>
-                        SCRAMJET
+                        PROXY
                     </div>
                     <input type="text" id="browserUrl" placeholder="Search or enter URL..." value="https://google.com">
                 </div>
