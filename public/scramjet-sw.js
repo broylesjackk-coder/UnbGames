@@ -1,4 +1,4 @@
-importScripts("scramjet/controller.sw.js");
+importScripts("/scramjet/controller.sw.js");
 
 self.addEventListener("install", () => {
     self.skipWaiting();

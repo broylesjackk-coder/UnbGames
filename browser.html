@@ -111,13 +111,13 @@
                 if (typeof $scramjetController === 'undefined') throw new Error("Controller script failed to load. Check your network.");
                 
                 loadingText.innerText = "Configuring Scramjet Paths...";
-                $scramjetController.config.injectPath = "scramjet/controller.inject.js";
-                $scramjetController.config.scramjetPath = "scramjet/scramjet.all.js";
-                $scramjetController.config.wasmPath = "scramjet/scramjet.wasm.wasm";
+                $scramjetController.config.injectPath = "/scramjet/controller.inject.js";
+                $scramjetController.config.scramjetPath = "/scramjet/scramjet.all.js";
+                $scramjetController.config.wasmPath = "/scramjet/scramjet.wasm.wasm";
 
                 loadingText.innerText = "Activating Service Worker...";
-                const registration = await navigator.serviceWorker.register('scramjet-sw.js', {
-                    scope: '__service/',
+                const registration = await navigator.serviceWorker.register('/scramjet-sw.js', {
+                    scope: '/service/',
                 });
 
                 // Crucial: Wait for the controller to take over
@@ -154,8 +154,9 @@
                     }
                 }
 
-                if (!success) throw new Error("All Wisp servers are unreachable. Your network might be blocking them.");
+                if (!success) throw new Error("Could not connect to any Wisp servers. Check your internet or try a different network.");
 
+                loadingText.innerText = "Initializing Scramjet Engine...";
                 scramjetController = new $scramjetController.Controller({
                     serviceworker: navigator.serviceWorker.controller || registration.active,
                     transport: transport
