@@ -160,7 +160,7 @@
             try {
                 const gamesList = [
                     { name: "Minecraft", id: "minecraft-1.8", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/minecraft-1.8/icon.png" },
-                    { name: "Slope", id: "slope", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/slope/slope.png" },
+                    { name: "Slope", id: "/games/slope/index.html", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/slope/slope.png", local: true },
                     { name: "1v1.LOL", id: "1v1lol", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/1v1lol/icon.png" },
                     { name: "Friday Night Funkin'", id: "fnf", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/fnf/icon.png" },
                     { name: "Moto X3M", id: "moto-x3m", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/moto-x3m/icon.png" },
@@ -184,9 +184,15 @@
                         card.className = 'game-card';
                         card.style.animationDelay = `${index * 0.05}s`;
                         card.onclick = () => {
-                            const gameUrl = `https://raw.githack.com/3kh0/3kh0-assets/main/${game.id}/index.html`;
-                            localStorage.setItem('last_game_url', gameUrl);
-                            window.location.href = 'browser.html';
+                            if (game.local) {
+                                // Load local games directly
+                                window.location.href = game.id;
+                            } else {
+                                // Route external games via proxy
+                                const gameUrl = `https://raw.githack.com/3kh0/3kh0-assets/main/${game.id}/index.html`;
+                                localStorage.setItem('last_game_url', gameUrl);
+                                window.location.href = 'browser.html';
+                            }
                         };
                         card.innerHTML = `
                             <div class="game-icon">
