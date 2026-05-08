@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Mist</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .image-selector {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 14px;
+            outline: none;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .image-selector:hover {
+            border-color: var(--primary-color);
+        }
+        .image-selector option {
+            background: #0a0a0a;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loader-text">Loading Settings</div>
+    </div>
+
+    <div class="background-overlay"></div>
+    
+    <div class="nav-trigger" id="navTrigger">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </div>
+
+    <header class="floating-nav" id="floatingNav">
+        <nav>
+            <div class="logo">Mist</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="games.html">Games</a></li>
+                <li><a href="settings.html" class="active">Settings</a></li>
+                <li><a href="browser.html">Browser</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="settings-container">
+                <h2>Settings</h2>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Auto about:blank</h3>
+                        <p>Automatically redirect to about:blank on load.</p>
+                    </div>
+                    <div class="toggle-switch" id="autoAboutBlankToggle"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Close Confirmation</h3>
+                        <p>Ask before closing the tab.</p>
+                    </div>
+                    <div class="toggle-switch" id="closeConfirmToggle"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Loading Screens</h3>
+                        <p>Enable cinematic transitions between pages.</p>
+                    </div>
+                    <div class="toggle-switch active" id="loadingToggle"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Background Image</h3>
+                        <p>Choose your preferred mountain view.</p>
+                    </div>
+                    <select class="image-selector" id="bgSelector">
+                        <option value="emmeli-m-rmyatHqpuOQ-unsplash.jpg">Lake Mountain (4K)</option>
+                        <option value="daniel-michele-7ZYK8JYMIbU-unsplash.jpg">Mist Valley (4K)</option>
+                        <option value="tatiana-mokhova-uJeoFnl_nHs-unsplash.jpg">Snowy Peak (4K)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Toggle logic with visual feedback
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+                localStorage.setItem(toggle.id, toggle.classList.contains('active'));
+            });
+        });
+
+        // Load preferences on page load
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            const saved = localStorage.getItem(toggle.id);
+            if (saved !== null) {
+                if (saved === 'true') toggle.classList.add('active');
+                else toggle.classList.remove('active');
+            }
+        });
+
+        // Background selector logic
+        const bgSelector = document.getElementById('bgSelector');
+        const savedBg = localStorage.getItem('mist_bg');
+        if (savedBg) bgSelector.value = savedBg;
+
+        bgSelector.addEventListener('change', (e) => {
+            const newBg = e.target.value;
+            localStorage.setItem('mist_bg', newBg);
+            document.querySelector('.background-overlay').style.backgroundImage = `url('${newBg}')`;
+        });
+    </script>
+</body>
+</html>

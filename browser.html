@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser | Mist</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Scramjet & Transports -->
+    <script src="scramjet/scramjet.all.js"></script>
+    <script src="scramjet/controller.api.js"></script>
+    <script src="scramjet/epoxy.js"></script>
+    <script src="scramjet/libcurl.js"></script>
+    
+    <style>
+        .browser-window.minimized { height: 60px; overflow: hidden; }
+        .browser-window.fullscreen { width: 100vw; height: 100vh; max-width: none; border-radius: 0; position: fixed; top: 0; left: 0; z-index: 2000; }
+        .control { cursor: pointer; transition: transform 0.2s ease; }
+        .control:hover { transform: scale(1.2); }
+        .proxy-indicator { font-size: 0.7rem; color: var(--primary-color); margin-right: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+        .status-dot { width: 8px; height: 8px; background: #ff5f56; border-radius: 50%; display: inline-block; transition: all 0.3s ease; }
+        .status-dot.active { background: #27c93f; box-shadow: 0 0 10px rgba(39, 201, 63, 0.5); }
+        #errorLog { color: #ff5f56; font-size: 0.8rem; margin-top: 10px; display: none; text-align: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loader-text" id="loadingText">Connecting to Scramjet Network</div>
+        <div id="errorLog"></div>
+        <button id="retryBtn" style="display:none; margin-top: 1rem; padding: 10px 20px; background: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; font-weight: 700;">Reload Engine</button>
+    </div>
+
+    <div class="background-overlay"></div>
+    
+    <div class="nav-trigger" id="navTrigger">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </div>
+
+    <header class="floating-nav" id="floatingNav">
+        <nav>
+            <div class="logo">Mist</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="games.html">Games</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li><a href="browser.html" class="active">Browser</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="hero">
+        <div class="browser-window" id="browserWindow">
+            <div class="browser-header">
+                <div class="browser-controls">
+                    <div class="control red" id="closeBtn"></div>
+                    <div class="control yellow" id="minBtn"></div>
+                    <div class="control green" id="maxBtn"></div>
+                </div>
+                <div class="url-bar">
+                    <div class="proxy-indicator">
+                        <span class="status-dot" id="proxyStatus"></span>
+                        SCRAMJET
+                    </div>
+                    <input type="text" id="browserUrl" placeholder="Search or enter URL..." value="https://google.com">
+                </div>
+            </div>
+            <div class="browser-content">
+                <iframe id="browserIframe"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        const urlInput = document.getElementById('browserUrl');
+        const iframe = document.getElementById('browserIframe');
+        const browserWindow = document.getElementById('browserWindow');
+        const proxyStatus = document.getElementById('proxyStatus');
+        const loadingText = document.getElementById('loadingText');
+        const errorLog = document.getElementById('errorLog');
+        const retryBtn = document.getElementById('retryBtn');
+
+        let scramjetController;
+        let activeFrame;
+
+        function logError(msg) {
+            console.error(msg);
+            errorLog.innerText = msg;
+            errorLog.style.display = 'block';
+            retryBtn.style.display = 'block';
+            proxyStatus.style.background = "#ff5f56";
+        }
+
+        retryBtn.onclick = () => location.reload();
+
+        async function initScramjet() {
+            try {
+                if (typeof $scramjetController === 'undefined') throw new Error("Controller script failed to load. Check your network.");
+                
+                loadingText.innerText = "Configuring Scramjet Paths...";
+                $scramjetController.config.injectPath = "scramjet/controller.inject.js";
+                $scramjetController.config.scramjetPath = "scramjet/scramjet.all.js";
+                $scramjetController.config.wasmPath = "scramjet/scramjet.wasm.wasm";
+
+                loadingText.innerText = "Activating Service Worker...";
+                const registration = await navigator.serviceWorker.register('scramjet-sw.js', {
+                    scope: '__service/',
+                });
+
+                // Crucial: Wait for the controller to take over
+                if (!navigator.serviceWorker.controller) {
+                    loadingText.innerText = "Syncing with Worker...";
+                    await new Promise(resolve => {
+                        navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+                        // Timeout to prevent hanging
+                        setTimeout(resolve, 3000);
+                    });
+                }
+
+                await navigator.serviceWorker.ready;
+
+                loadingText.innerText = "Establishing Wisp Tunnel...";
+                // Try multiple public wisp servers
+                const wispServers = [
+                    "wss://wisp.mercuryworkshop.me",
+                    "wss://t.student-tutor.com/wisp/",
+                    "wss://wisp.pydust.cloud"
+                ];
+                
+                let transport;
+                let success = false;
+                
+                for (const server of wispServers) {
+                    try {
+                        transport = new $epoxy.EpoxyClient({ wisp: server });
+                        success = true;
+                        console.log("Connected to wisp:", server);
+                        break;
+                    } catch (e) {
+                        console.warn("Failed to connect to:", server);
+                    }
+                }
+
+                if (!success) throw new Error("All Wisp servers are unreachable. Your network might be blocking them.");
+
+                scramjetController = new $scramjetController.Controller({
+                    serviceworker: navigator.serviceWorker.controller || registration.active,
+                    transport: transport
+                });
+
+                loadingText.innerText = "Handshaking with Controller...";
+                await scramjetController.wait();
+                
+                activeFrame = scramjetController.createFrame(iframe);
+                
+                proxyStatus.classList.add('active');
+                document.getElementById('loading-screen').classList.add('hidden');
+                console.log('Scramjet Initialized Successfully');
+
+            } catch (err) {
+                logError("Init Error: " + err.message);
+            }
+        }
+
+        function navigate(url) {
+            if (!activeFrame) {
+                location.reload();
+                return;
+            }
+            document.getElementById('loading-screen').classList.remove('hidden');
+            loadingText.innerText = "Routing via Scramjet...";
+
+            let finalUrl = url.trim();
+            if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                if (finalUrl.includes('.') && !finalUrl.includes(' ')) {
+                    finalUrl = 'https://' + finalUrl;
+                } else {
+                    finalUrl = 'https://www.google.com/search?q=' + encodeURIComponent(finalUrl);
+                }
+            }
+
+            activeFrame.go(finalUrl);
+            urlInput.value = finalUrl;
+        }
+
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') navigate(urlInput.value);
+        });
+
+        document.getElementById('closeBtn').onclick = () => window.location.href = 'index.html';
+        document.getElementById('minBtn').onclick = () => browserWindow.classList.toggle('minimized');
+        document.getElementById('maxBtn').onclick = () => browserWindow.classList.toggle('fullscreen');
+
+        iframe.onload = () => {
+            document.getElementById('loading-screen').classList.add('hidden');
+        };
+
+        initScramjet();
+    </script>
+</body>
+</html>

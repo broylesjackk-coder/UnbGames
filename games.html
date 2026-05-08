@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games | Mist</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2.5rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            overflow-y: auto;
+            max-height: 75vh;
+            padding-bottom: 8rem;
+        }
+
+        .games-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+        .games-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .games-grid::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .game-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 40px rgba(0, 229, 255, 0.25);
+        }
+
+        .game-icon {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .game-card:hover .game-icon img {
+            transform: scale(1.15);
+        }
+
+        .game-info {
+            padding: 1.5rem;
+        }
+
+        .game-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 650px;
+            margin: 4rem auto 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1.2rem 2.5rem;
+            border-radius: 100px;
+            color: #fff;
+            font-family: var(--font-family);
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loader-text">Fetching Games</div>
+    </div>
+
+    <div class="background-overlay"></div>
+    
+    <div class="nav-trigger" id="navTrigger">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </div>
+
+    <header class="floating-nav" id="floatingNav">
+        <nav>
+            <div class="logo">Mist</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="games.html" class="active">Games</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li><a href="browser.html">Browser</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for a game..." id="gameSearch">
+        </div>
+        <div class="games-grid" id="gamesGrid">
+            <!-- Games will be injected here -->
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        async function loadGames() {
+            const grid = document.getElementById('gamesGrid');
+            const search = document.getElementById('gameSearch');
+            
+            try {
+                const gamesList = [
+                    { name: "Slope", id: "slope", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/slope/slope.png" },
+                    { name: "1v1.LOL", id: "1v1lol", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/1v1lol/icon.png" },
+                    { name: "Tunnel Rush", id: "tunnel-rush", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tunnel-rush/icon.png" },
+                    { name: "Retro Bowl", id: "retro-bowl", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/retro-bowl/icon.png" },
+                    { name: "BitLife", id: "bitlife", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/bitlife/icon.png" },
+                    { name: "Cookie Clicker", id: "cookie-clicker", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/cookie-clicker/icon.png" },
+                    { name: "Subway Surfers", id: "subway-surfers", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/subway-surfers/icon.png" },
+                    { name: "Tetris", id: "tetris", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tetris/icon.png" }
+                ];
+
+                function renderGames(list) {
+                    grid.innerHTML = '';
+                    list.forEach((game, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'game-card';
+                        card.style.animationDelay = `${index * 0.05}s`;
+                        card.innerHTML = `
+                            <div class="game-icon">
+                                <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://via.placeholder.com/220x124/111/00e5ff?text=${game.name}'">
+                            </div>
+                            <div class="game-info">
+                                <h3>${game.name}</h3>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+
+                renderGames(gamesList);
+
+                search.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    const filtered = gamesList.filter(g => g.name.toLowerCase().includes(query));
+                    renderGames(filtered);
+                });
+
+            } catch (err) {
+                console.error("Failed to load games:", err);
+            }
+        }
+
+        loadGames();
+    </script>
+</body>
+</html>
