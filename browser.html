@@ -9,11 +9,47 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <!-- Proxy Engine & Transports -->
-    <script src="/engine/scramjet.all.js?v=2"></script>
-    <script src="/engine/controller.api.js?v=2"></script>
-    <script src="/engine/epoxy.js?v=2"></script>
-    <script src="/engine/libcurl.js?v=2"></script>
+    <!-- Dynamic Proxy Loader -->
+    <script>
+        async function loadProxyScripts() {
+            const scripts = [
+                '/engine/scramjet.all.js?v=3',
+                '/engine/controller.api.js?v=3',
+                '/engine/epoxy.js?v=3',
+                '/engine/libcurl.js?v=3'
+            ];
+            
+            for (const src of scripts) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.src = src;
+                        s.onload = resolve;
+                        s.onerror = () => reject(new Error(`Failed to load: ${src}`));
+                        document.head.appendChild(s);
+                    });
+                } catch (e) {
+                    console.error(e);
+                    // Try relative fallback
+                    const fallback = src.startsWith('/') ? src.substring(1) : src;
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const s = document.createElement('script');
+                            s.src = fallback;
+                            s.onload = resolve;
+                            s.onerror = () => reject(new Error(`Fallback failed: ${fallback}`));
+                            document.head.appendChild(s);
+                        });
+                    } catch (err) {
+                        document.getElementById('errorLog').innerText = `Critical Load Error: ${err.message}`;
+                        document.getElementById('errorLog').style.display = 'block';
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    </script>
     
     <style>
         .browser-window.minimized { height: 60px; overflow: hidden; }
@@ -108,7 +144,11 @@
 
         async function initScramjet() {
             try {
-                if (typeof $scramjetController === 'undefined') throw new Error("Controller script failed to load. Check your network.");
+                loadingText.innerText = "Downloading Proxy Engine...";
+                const loaded = await loadProxyScripts();
+                if (!loaded) return; // Error already logged by loader
+                
+                if (typeof $scramjetController === 'undefined') throw new Error("Controller API failed to initialize.");
                 
                 loadingText.innerText = "Configuring Proxy Paths...";
                 $scramjetController.config.injectPath = "/engine/controller.inject.js";
