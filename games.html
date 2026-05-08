@@ -159,14 +159,22 @@
             
             try {
                 const gamesList = [
+                    { name: "Minecraft", id: "minecraft-1.8", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/minecraft-1.8/icon.png" },
                     { name: "Slope", id: "slope", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/slope/slope.png" },
                     { name: "1v1.LOL", id: "1v1lol", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/1v1lol/icon.png" },
-                    { name: "Tunnel Rush", id: "tunnel-rush", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tunnel-rush/icon.png" },
-                    { name: "Retro Bowl", id: "retro-bowl", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/retro-bowl/icon.png" },
+                    { name: "Friday Night Funkin'", id: "fnf", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/fnf/icon.png" },
+                    { name: "Moto X3M", id: "moto-x3m", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/moto-x3m/icon.png" },
+                    { name: "Drive Mad", id: "drive-mad", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/drive-mad/icon.png" },
                     { name: "BitLife", id: "bitlife", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/bitlife/icon.png" },
                     { name: "Cookie Clicker", id: "cookie-clicker", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/cookie-clicker/icon.png" },
                     { name: "Subway Surfers", id: "subway-surfers", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/subway-surfers/icon.png" },
-                    { name: "Tetris", id: "tetris", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tetris/icon.png" }
+                    { name: "Tunnel Rush", id: "tunnel-rush", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tunnel-rush/icon.png" },
+                    { name: "Retro Bowl", id: "retro-bowl", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/retro-bowl/icon.png" },
+                    { name: "Paper.io 2", id: "paperio2", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/paperio2/icon.png" },
+                    { name: "Tetris", id: "tetris", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/tetris/icon.png" },
+                    { name: "Among Us", id: "among-us", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/among-us/icon.png" },
+                    { name: "Elastic Man", id: "elastic-man", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/elastic-man/icon.png" },
+                    { name: "Geometry Dash", id: "geometry-dash-lite", icon: "https://raw.githubusercontent.com/3kh0/3kh0-assets/main/geometry-dash-lite/icon.png" }
                 ];
 
                 function renderGames(list) {
@@ -175,6 +183,11 @@
                         const card = document.createElement('div');
                         card.className = 'game-card';
                         card.style.animationDelay = `${index * 0.05}s`;
+                        card.onclick = () => {
+                            const gameUrl = `https://raw.githack.com/3kh0/3kh0-assets/main/${game.id}/index.html`;
+                            localStorage.setItem('last_game_url', gameUrl);
+                            window.location.href = 'browser.html';
+                        };
                         card.innerHTML = `
                             <div class="game-icon">
                                 <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://via.placeholder.com/220x124/111/00e5ff?text=${game.name}'">

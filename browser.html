@@ -253,7 +253,13 @@
             document.getElementById('loading-screen').classList.add('hidden');
         };
 
-        initScramjet();
+        initScramjet().then(() => {
+            const lastGame = localStorage.getItem('last_game_url');
+            if (lastGame) {
+                navigate(lastGame);
+                localStorage.removeItem('last_game_url');
+            }
+        });
     </script>
 </body>
 </html>
