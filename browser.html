@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <!-- Scramjet & Transports -->
-    <script src="/scramjet/scramjet.all.js"></script>
-    <script src="/scramjet/controller.api.js"></script>
-    <script src="/scramjet/epoxy.js"></script>
-    <script src="/scramjet/libcurl.js"></script>
+    <!-- Proxy Engine & Transports -->
+    <script src="/engine/scramjet.all.js"></script>
+    <script src="/engine/controller.api.js"></script>
+    <script src="/engine/epoxy.js"></script>
+    <script src="/engine/libcurl.js"></script>
     
     <style>
         .browser-window.minimized { height: 60px; overflow: hidden; }
@@ -110,13 +110,13 @@
             try {
                 if (typeof $scramjetController === 'undefined') throw new Error("Controller script failed to load. Check your network.");
                 
-                loadingText.innerText = "Configuring Scramjet Paths...";
-                $scramjetController.config.injectPath = "/scramjet/controller.inject.js";
-                $scramjetController.config.scramjetPath = "/scramjet/scramjet.all.js";
-                $scramjetController.config.wasmPath = "/scramjet/scramjet.wasm.wasm";
+                loadingText.innerText = "Configuring Proxy Paths...";
+                $scramjetController.config.injectPath = "/engine/controller.inject.js";
+                $scramjetController.config.scramjetPath = "/engine/scramjet.all.js";
+                $scramjetController.config.wasmPath = "/engine/scramjet.wasm.wasm";
 
-                loadingText.innerText = "Activating Service Worker...";
-                const registration = await navigator.serviceWorker.register('/scramjet-sw.js', {
+                loadingText.innerText = "Activating Proxy Worker...";
+                const registration = await navigator.serviceWorker.register('/sw.js', {
                     scope: '/service/',
                 });
 
