@@ -32,6 +32,15 @@
         <div class="loader-text" id="loadingText">Connecting to Scramjet Network</div>
         <div id="errorLog"></div>
         <button id="retryBtn" style="display:none; margin-top: 1rem; padding: 10px 20px; background: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; font-weight: 700;">Reload Engine</button>
+        <script>
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                if (loader && !loader.classList.contains('hidden')) {
+                    console.warn("Loading fail-safe triggered.");
+                    loader.classList.add('hidden');
+                }
+            }, 5000);
+        </script>
     </div>
 
     <div class="background-overlay"></div>
@@ -74,7 +83,7 @@
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
     <script>
         const urlInput = document.getElementById('browserUrl');
         const iframe = document.getElementById('browserIframe');

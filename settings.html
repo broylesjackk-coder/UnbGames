@@ -34,6 +34,12 @@
     <div id="loading-screen">
         <div class="loader"></div>
         <div class="loader-text">Loading Settings</div>
+        <script>
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                if (loader) loader.classList.add('hidden');
+            }, 3000);
+        </script>
     </div>
 
     <div class="background-overlay"></div>
@@ -98,7 +104,7 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
     <script>
         // Toggle logic with visual feedback
         document.querySelectorAll('.toggle-switch').forEach(toggle => {
